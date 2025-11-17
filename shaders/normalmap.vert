@@ -47,7 +47,9 @@ void main()
     // B can also be calculated by : vec3 B = normalize(cross(N, T));
     vec3 B = normalize(vec3(model * vec4(aBitangent, 0.0)));
 
-    tangentLightPos = TBN * lightPos;
-    tangentViewPos  = TBN * viewPos;
-    tangentFragPos  = TBN * vec3(model * vec4(aPos, 1.0));
+    mat3 invTBN = transpose(mat3(T, B, N));
+
+    tangentLightPos = invTBN * lightPos;
+    tangentViewPos  = invTBN * viewPos;
+    tangentFragPos  = invTBN * vec3(model * vec4(aPos, 1.0));
 }
