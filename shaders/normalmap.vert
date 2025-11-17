@@ -38,9 +38,9 @@ void main()
 
     // LabA08 TODO: create the TBN matrix
 
-    mat3 TBN = transpose(mat3(T, B, N));
+    mat3 invTBN = transpose(mat3(T, B, N));
 
-    tangentLightPos = TBN * lightPos;
-    tangentViewPos  = TBN * viewPos;
-    tangentFragPos  = TBN * vec3(model * vec4(aPos, 1.0));
+    tangentLightPos = invTBN * lightPos;
+    tangentViewPos  = invTBN * viewPos;
+    tangentFragPos  = invTBN * vec3(model * vec4(aPos, 1.0));
 }
