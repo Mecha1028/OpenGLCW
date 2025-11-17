@@ -43,9 +43,9 @@ void main()
     texCoord = aTexCoord;
 
     vec3 T = normalize(vec3(model * vec4(aTangent,   0.0)));
-    vec3 B = normalize(vec3(model * vec4(aBitangent, 0.0)));
     vec3 N = normalize(vec3(model * vec4(aNormal,    0.0)));
-    mat3 TBN = transpose(mat3(T, B, N));
+    // B can also be calculated by : vec3 B = normalize(cross(N, T));
+    vec3 B = normalize(vec3(model * vec4(aBitangent, 0.0)));
 
     tangentLightPos = TBN * lightPos;
     tangentViewPos  = TBN * viewPos;
