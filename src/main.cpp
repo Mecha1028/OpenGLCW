@@ -28,6 +28,9 @@ GLuint phongShader;
 // added for LabA07
 GLuint texblinnShader;
 
+// added for LabA06 GGX
+GLuint texggxShader;
+
 // Initialize shader
 GLuint initShader(std::string pathVert, std::string pathFrag) 
 {
@@ -195,6 +198,11 @@ int main()
     setLightPosition(lightPos);
     setViewPosition(viewPos);
 
+    // added for LabA06 GGX
+    texggxShader = initShader("shaders/texblinn.vert", "shaders/texggx.frag");
+    setLightPosition(lightPos);
+    setViewPosition(viewPos);
+
     // set the eye at (0, 0, 5), looking at the centre of the world
     // try to change the eye position
     viewPos = glm::vec3(0.0f, 2.0f, 5.0f);
@@ -216,7 +224,7 @@ int main()
 
 
     std::shared_ptr<Mesh> bunny = std::make_shared<Mesh>();
-    bunny->init("models/bunny_normal.obj", texblinnShader);
+    bunny->init("models/bunny_normal.obj", texggxShader);
 
     
     //----------------------------------------------------
