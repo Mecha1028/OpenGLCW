@@ -1,20 +1,11 @@
-// texblinn.frag
 #version 410
 
 // for lighting
 in vec3 fragPos;
 in vec3 normal;
-// added for LabA07
-in vec2 texCoord;
 
 uniform vec3 lightPos;
 uniform vec3 viewPos;
-
-// LabA07 diffuse texture map only
-uniform sampler2D textureMap;
-
-// LabA08 
-//uniform sampler2D normalMap;
 
 out vec4 colour_out;
 
@@ -71,9 +62,15 @@ vec3 BRDF_GGX(vec3 N, vec3 V, vec3 L, vec3 F0, float roughness)
     return numerator / denominator;
 }
 
+
 void main()
 {
-    vec3 colour = texture(textureMap, texCoord).rgb;
+    // RGBA
+    //colour_out = vec4(1.0, 0.0, 0.0, 1.0);
+    //colour_out = vec4(colour_vert, 1.0);
+
+    // manually set R G B of the surface colour, here is RED
+    vec3 colour = vec3(1.0, 0.0, 0.0);
 
     // 1. ambient
     vec3 ambient = 0.05 * colour;
@@ -94,11 +91,10 @@ void main()
     // assuming a light source with a bright white colour
     vec3 specular = vec3(0.3) * spec;
 
-
     vec3 F0 = vec3(0.04); // non-metal base reflectivity
     float roughness = 0.1; 
     specular = BRDF_GGX(norm, viewDir, lightDir, F0, roughness);
-
+    
     // The final output fragment colour 
     // combination of ambient, diffuse and specular
     colour_out = vec4(ambient + diffuse + specular, 1.0);

@@ -29,6 +29,7 @@ GLuint phongShader;
 GLuint texblinnShader;
 
 // added for LabA06 GGX
+GLuint blinnggxShader;
 GLuint texggxShader;
 
 // Initialize shader
@@ -204,6 +205,11 @@ int main()
     blinnShader = initShader( "shaders/blinn.vert", "shaders/blinn.frag");
     setLightPosition(lightPos);
     setViewPosition(viewPos);
+
+    blinnggxShader = initShader( "shaders/blinn.vert", "shaders/blinnggx.frag");
+    setLightPosition(lightPos);
+    setViewPosition(viewPos);
+
     // added for LabA07
     texblinnShader = initShader("shaders/texblinn.vert", "shaders/texblinn.frag");
     setLightPosition(lightPos);
@@ -227,11 +233,11 @@ int main()
     //----------------------------------------------------
     // Meshes
     std::shared_ptr<Mesh> cube = std::make_shared<Mesh>();
-    cube->init("models/cube.obj", blinnShader);
+    cube->init("models/cube.obj", blinnggxShader);
 
 
     std::shared_ptr<Mesh> teapot = std::make_shared<Mesh>();
-    teapot->init("models/teapot.obj", blinnShader);
+    teapot->init("models/teapot.obj", blinnggxShader);
 
 
     std::shared_ptr<Mesh> bunny = std::make_shared<Mesh>();
