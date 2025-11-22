@@ -30,5 +30,8 @@ void main()
 
     texCoord = aTexCoord;
     
-    fragPosLightSpace = lightSpaceMatrix * vec4(fragPos, 1.0);
+    
+    // LabA09 Shadow Map TODO: calculate fragPosLightSpace
+
+
 }

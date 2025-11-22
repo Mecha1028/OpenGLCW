@@ -74,21 +74,6 @@ void Mesh::loadModel(std::string path)
 
             v.normal = normal;
 
-            /*
-            // LabA08 tangent space for normal mapping
-            glm::vec3 tangent;
-            tangent.x = mesh->mTangents[i].x;
-            tangent.y = mesh->mTangents[i].y;
-            tangent.z = mesh->mTangents[i].z;
-            v.tangent = tangent;  
-
-            tangent.x = mesh->mBitangents[i].x;
-            tangent.y = mesh->mBitangents[i].y;
-            tangent.z = mesh->mBitangents[i].z;
-            v.bitangent = tangent; 
-            */
-
-
             // LabA07 Texture Coordinates
             if(mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?
             {

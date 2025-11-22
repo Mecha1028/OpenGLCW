@@ -6,7 +6,8 @@ in vec2 TexCoords;
 uniform sampler2D depthMap;
 
 void main()
-{             
+{   
+    // for rendering the shadow depth map          
     float depthValue = texture(depthMap, TexCoords).r;
     FragColor = vec4(vec3(depthValue), 1.0);
 }  

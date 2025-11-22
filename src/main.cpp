@@ -29,12 +29,12 @@ GLuint texblinnShader;
 //GLuint normalblinnShader;
 
 // ========================================
-// for LabA08 Shadow Mapping
+// for LabA09 Shadow Map global variables
 int shadowMapWidth = 1000;
 int shadowMapHeight = 1000;
 
-// Window Viewport Size. for demo purpose we set shadow size equal to window size
-// should be in a higher resolution
+// Window Viewport Size. for demo purpose we set window size equal to shadow size
+// ideally, the shadow map should have a higher resolution
 int width = shadowMapWidth;
 int height = shadowMapHeight;
 //int width = 800;
@@ -50,15 +50,19 @@ glm::mat4 matLightView; // view matrix from the light source
 glm::mat4 matLightProj; // projection matrix from the light source
 
 
+// LabA09 Shadow Map
 void initRenderToDepthTexture()
 {
-    //GLfloat border[] = {1.0f, 0.0f,0.0f,0.0f };
     
-    // Generate the depth texture ID
-    glGenTextures(1, &depthTex);
-    glBindTexture(GL_TEXTURE_2D, depthTex);
+    // Use texture unit 1 for the depth texture
+    glActiveTexture(GL_TEXTURE1);
+    // LabA09 ShadowMap TODO: 
+    // generate texture ID depthTex with glGenTexures()
+    // and bind depthTex using glBindTexture()
+
+
     
-    // set texture size and format, high resolution 24bit for depth
+    // set depth texture size and format, high resolution 24bit for depth
     glTexStorage2D(GL_TEXTURE_2D, 1, GL_DEPTH_COMPONENT24, shadowMapWidth, shadowMapHeight);
 
     // set Interpolation and Out-of-range texture parameters
@@ -67,30 +71,19 @@ void initRenderToDepthTexture()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);  
 
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-    //glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, border);
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LESS);
-
-    // Assign the depth buffer texture to texture channel 1
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, depthTex);
 
     // Render to Texture
-    // Create and set up the FBO
+    // Create and bind the shadow map framebuffer
     glGenFramebuffers(1, &shadowFBO);
     glBindFramebuffer(GL_FRAMEBUFFER, shadowFBO);
 
-    // use the depth texture as the framebuffer
+    // use the depth texture as the rendering target of the framebuffer
+    // we only need the depth component
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
                            GL_TEXTURE_2D, depthTex, 0);
 
-    //GLenum drawBuffers[] = {GL_NONE};
-    //glDrawBuffers(1, drawBuffers);
-    // set draw buffer to GL_NONE
+    // we don't need the colour buffer
     glDrawBuffer(GL_NONE);
-    //glReadBuffer(GL_NONE);
 
     GLenum result = glCheckFramebufferStatus(GL_FRAMEBUFFER);
     if( result == GL_FRAMEBUFFER_COMPLETE) {
@@ -99,6 +92,7 @@ void initRenderToDepthTexture()
         printf("Framebuffer is not complete.\n");
     }
 
+    // unbind the depth rendering framebuffer
     glBindFramebuffer(GL_FRAMEBUFFER,0);
 }
 
@@ -149,10 +143,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     if (action == GLFW_PRESS) {
 
         if (mods & GLFW_MOD_CONTROL) {
-            if (GLFW_KEY_D == key) {
-                bDepth = !bDepth;
-                return;
-            }
 
             // translation in world space
             if (GLFW_KEY_LEFT == key) {
@@ -224,26 +214,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
             mat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -transStep));
             matView = mat * matView;
         } 
-
-        // translation along world axis
-        else if (GLFW_KEY_H == key ) {
-            //if (modes & GLFW_MOD_CONTROL)
-            // move left along -X
-            mat = glm::translate(glm::mat4(1.0f), glm::vec3(transStep, 0.0f, 0.0f));
-            matView = matView * mat;
-        } else if (GLFW_KEY_L == key) {
-            // move right along X
-            mat = glm::translate(glm::mat4(1.0f), glm::vec3(-transStep, 0.0f, 0.0f));
-            matView = matView * mat;
-        } if (GLFW_KEY_J == key ) {
-            // move forward along Z
-            mat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -transStep));
-            matView = matView * mat;
-        } else if (GLFW_KEY_K == key) {
-            // move backward along -Z
-            mat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, transStep));
-            matView = matView * mat;
-        } 
     }
     
 }
@@ -277,8 +247,6 @@ int main()
         return -1;
     }
 
-    // flatShader = initShader( "shaders/flat.vert", "shaders/flat.frag");
-    // initLightPosition(lightPos);
     phongShader = initShader( "shaders/blinn.vert", "shaders/phong.frag");
     setLightPosition(lightPos);
     setViewPosition(viewPos);
@@ -290,22 +258,15 @@ int main()
     texblinnShader = initShader("shaders/texblinn.vert", "shaders/texblinn.frag");
     setLightPosition(lightPos);
     setViewPosition(viewPos);
-    //setLightPosition(glm::vec3(5.0f, 5.0f, 10.0f));
-    //setViewPosition(lightPos);
 
-    //normalblinnShader = initShader("shaders/normalblinn2.vert", "shaders/normalblinn2.frag");
-    //setLightPosition(lightPos);
-    //setViewPosition(viewPos);
-
-    // LabA09 Shadow Map
+    // LabA09 Two shaders used by shadow map
+    // LabA09 Shadow Map : depth shader
     depthShader = initShader("shaders/simpledepth.vert", "shaders/simpledepth.frag");
-    //setLightPosition(lightPos);
-    //setViewPosition(viewPos);
 
+    // LabA09 Shadow Map : shadowmap shader
     shadowShader = initShader("shaders/shadowmap.vert", "shaders/shadowmap.frag");
     setLightPosition(lightPos);
     setViewPosition(viewPos);
-
 
     // set the eye position, looking at the centre of the world
     viewPos = glm::vec3(0.0f, 2.0f, 5.0f);
@@ -314,17 +275,27 @@ int main()
     // set the Y field of view angle to 60 degrees, width/height ratio to 1.0, and a near plane of 3.5, far plane of 6.5
     matProj = glm::perspective(glm::radians(60.0f), width / (float) height, 2.0f, 8.0f);
 
-    // LabA09 Shadow Map
-    matLightView = glm::lookAt(lightPos, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)); 
+    // LabA09 Shadow Map TODO: set the light source as the camera 
+    // to generate the view matrix using glm::lookAt()
+    matLightView = /* TODO */; 
+    
+    
     // matLightProj = glm::perspective(glm::radians(60.0f), 1.0f, 2.0f, 8.0f);
+    // Here we are using a simple orthographic projection
     matLightProj = glm::ortho(-3.0f,3.0f,-3.0f,3.0f, -5.0f,15.0f);
 
-    //glUseProgram(depthShader);
-    glm::mat4 matLightviewproj = matLightProj * matLightView;
+
+    // LabA09 ShaodowMap TODO: calculate matLightviewproj
+    glm::mat4 matLightviewproj = /* TODO */ ;
+
+    // set uniform lightSpaceMatrix
     GLuint loc = glGetUniformLocation(shadowShader, "lightSpaceMatrix" );
     glUniformMatrix4fv(loc, 1, GL_FALSE, &matLightviewproj[0][0]);
+
+    // set uniform shadowMap to texture unit 1
     GLuint textureLoc = glGetUniformLocation(shadowShader, "shadowMap");
-    glUniform1i(textureLoc, 1);
+    // LabA09 ShaodowMap TODO: call glUniform1i() set textureLoc to  1
+    glUniform1i(/* TODO */, /* TODO */);
 
     //----------------------------------------------------
     // Meshes
@@ -336,9 +307,6 @@ int main()
 
     std::shared_ptr<Mesh> bunny = std::make_shared<Mesh>();
     bunny->init("models/bunny_normal.obj", texblinnShader);
-
-    //std::shared_ptr<Mesh> box = std::make_shared<Mesh>();
-    // box->init("models/Box_normal.obj", normalblinnShader);
 
     
     //----------------------------------------------------
@@ -363,7 +331,6 @@ int main()
     //----------------------------------------------------
     // Add the tree to the world space
     scene->addChild(cubeNode);
-    // scene->addChild(boxNode);
     // scene->addChild(cubeNode, glm::translate(glm::vec3(1.0f, 0.0f, 0.0f)), glm::rotate(glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
 
     // setting the background colour, you can change the value
@@ -371,8 +338,6 @@ int main()
     
     glEnable(GL_DEPTH_TEST);
 
-    //glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     // LabA09 Shadow Map
     initRenderToDepthTexture();
@@ -382,36 +347,43 @@ int main()
     {
         glfwPollEvents();
         
-        // 1st pass, draw the shadow depth map
-        if (! bDepth)
-            glBindFramebuffer(GL_FRAMEBUFFER, shadowFBO);
+        // 1st pass rendering, draw the shadow depth map
+        
+        // bind the depth rendering framebuffer
+        // off-screen rendering: render to shadowFBO
+        glBindFramebuffer(GL_FRAMEBUFFER, shadowFBO);
         
         glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
-        glViewport(0,0,shadowMapWidth, shadowMapHeight);
+        // LabA09 ShadowMap TODO: set viewport size to 
+        // shadowMapWidth x shadowMapHeight
+        glViewport(0,0,/* TODO */, /* TODO */);
 
+        // CULL FRONT FACE
         glEnable(GL_CULL_FACE);
         glCullFace(GL_FRONT);
-        //glEnable(GL_POLYGON_OFFSET_FILL);
-        //glPolygonOffset(0.5f,0.5f);
 
+        // use the depth drawing shader
         scene->setShaderId(depthShader);
-        scene->draw(matModelRoot, matLightView, matLightProj);
         
+        // LabA09 ShadowMap TODO: call scene->draw() with 
+        // light space view and projection matrix
+        scene->draw(matModelRoot, /* TODO */, /* TODO */);
+        
+        // restore back face culling
         glCullFace(GL_BACK);
         glFlush();
 
         
-        // 2nd pass
-        if (!bDepth)
-        {
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            glViewport(0, 0, width, height);
+        // 2nd pass rendering: scene with shadows
 
-            scene->setShaderId(shadowShader);
-            scene->draw(matModelRoot, matView, matProj);
-        }
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glViewport(0, 0, width, height);
+
+        scene->setShaderId(shadowShader);
+        scene->draw(matModelRoot, matView, matProj);
+
 
         glfwSwapBuffers(window);
     }
