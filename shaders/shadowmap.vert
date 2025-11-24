@@ -20,6 +20,7 @@ void main()
 {   
     gl_Position = projection * view * model * vec4(aPos, 1.0); 
 
+    // vertex/fragment pos in world space
     fragPos = vec3(model * vec4(aPos, 1.0));
     
     mat3 normalMatrix = mat3(model);
