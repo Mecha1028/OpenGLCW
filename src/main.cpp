@@ -351,6 +351,7 @@ int main()
         
         // bind the depth rendering framebuffer
         // off-screen rendering: render to shadowFBO
+        // comment the line to show the depthmap 
         glBindFramebuffer(GL_FRAMEBUFFER, shadowFBO);
         
         glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
