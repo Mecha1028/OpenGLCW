@@ -15,9 +15,9 @@ void main()
     // check whether fragment output is higher than threshold, if so output as brightness color
     float brightness = dot(colour.rgb, vec3(0.2126, 0.7152, 0.0722));
 
+    // LabA10 Bloom : TODO
     // filter the bright part based on a threshold
-    if(brightness > 0.9)
-        colour_out = vec4(colour.rgb, 1.0);
-    else
-        colour_out = vec4(0.0, 0.0, 0.0, 1.0);
+    // if the brightness is greater than the threhold, output (colour.rgb, 1.0)
+    // otherwise output the black colour
+
 }

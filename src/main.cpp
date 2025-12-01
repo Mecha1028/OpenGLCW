@@ -117,8 +117,6 @@ void render()
     scene->setShaderId(bloomrenderShader);
     scene->draw(matModelRoot, matView, matProj);
 
-    //teapot->setShaderId(bloomrenderShader);
-    //teapot->draw(matModelRoot, matView, matProj);
 }
 
 void filter() 
@@ -300,26 +298,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
             mat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -transStep));
             matView = mat * matView;
         } 
-
-        // translation along world axis
-        else if (GLFW_KEY_H == key ) {
-            //if (modes & GLFW_MOD_CONTROL)
-            // move left along -X
-            mat = glm::translate(glm::mat4(1.0f), glm::vec3(transStep, 0.0f, 0.0f));
-            matView = matView * mat;
-        } else if (GLFW_KEY_L == key) {
-            // move right along X
-            mat = glm::translate(glm::mat4(1.0f), glm::vec3(-transStep, 0.0f, 0.0f));
-            matView = matView * mat;
-        } if (GLFW_KEY_J == key ) {
-            // move forward along Z
-            mat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -transStep));
-            matView = matView * mat;
-        } else if (GLFW_KEY_K == key) {
-            // move backward along -Z
-            mat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, transStep));
-            matView = matView * mat;
-        } 
     }
     
 }
@@ -436,23 +414,21 @@ int main()
     {
         glfwPollEvents();
 
-        // Step 1
-        render();
-        
-        // Step 2
-        filter();
+        // LabA10 TODO: Step 1 render()
 
-        // Step 3
-        for (int i = 0; i < 50; i++)
-        {
-            blur(i);
-        }
-
-        // Step 4
-        blend();
         
-        //scene->draw(matModelRoot, matView, matProj);
-        //bunny->draw(glm::scale(glm::vec3(0.005f, 0.005f, 0.005f)), matView, matProj);
+        // LabA10 TODO: Step 2 filter()
+
+
+        // LabA10 TODO: Step 3  2D Gaussian blur
+        // you need to call 1D blur() at least twice 
+        // to achieve 2D Gassian blur
+
+
+
+        // LabA10 TODO: Step 4 blend()
+
+        
         
         glfwSwapBuffers(window);
     }

@@ -18,7 +18,7 @@ void main()
 
     if ( pass % 2 == 0)
     {
-        // horizontal on the x direction
+        // horizontal blur on the x direction
         for(int i = 1; i < 5; ++i)
         {
             result += texture(texblur, texCoord + vec2(tex_offset.x * i, 0.0)).rgb * weight[i];
@@ -27,12 +27,9 @@ void main()
     }
     else
     {
-        // vertical on the x direction  
-        for(int i = 1; i < 5; ++i)
-        {
-            result += texture(texblur, texCoord + vec2(0.0, tex_offset.y * i)).rgb * weight[i];
-            result += texture(texblur, texCoord - vec2(0.0, tex_offset.y * i)).rgb * weight[i];
-        }
+        // LabA10 Bloom TODO:
+        // vertical blur on the y direction  
+
     }
 
     // for debugging
