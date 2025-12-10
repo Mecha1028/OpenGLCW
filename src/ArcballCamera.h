@@ -51,9 +51,16 @@ public:
 
         // Compute quaternion between last and current
         glm::vec3 axis = glm::cross(lastPos, currPos);
+        // angle between v0 and v1
         float dot = glm::dot(lastPos, currPos);
+        
+        // the calcuated angle matches more to the model rotation
+        // to simulate a natural camera rotation around the centre
+        // we use the negative angle
         float angle = -acos(glm::min(1.0f, glm::max(-1.0f, dot)));
 
+        // use quternion to calculate the rotation matrix
+        // you can also use the Rodrigues formula 
         glm::quat dq = glm::angleAxis(angle, glm::normalize(axis));
         rotation = dq * rotation;
 
@@ -70,6 +77,8 @@ public:
     }
 
     // Middle-mouse pan
+    // This panning is camera position translation
+    // different from the rotation pan described in Lecture 4 slides
     void Pan(float dx, float dy) {
         glm::vec3 right = glm::vec3(rotation * glm::vec3(1,0,0));
         glm::vec3 up    = glm::vec3(rotation * glm::vec3(0,1,0));
@@ -110,6 +119,7 @@ private:
         glm::vec2 p(nx, ny);
         float len2 = glm::dot(p, p);
 
+        // try to set a z
         if (len2 <= 1.0f) {
             float z = sqrtf(1.0f - len2);
             return glm::vec3(p, z);
